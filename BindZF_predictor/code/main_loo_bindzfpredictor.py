@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import tensorflow as tf
 import pandas as pd
 from IPython.display import display
@@ -73,7 +74,7 @@ def main(args):
         ]
 
         finetune(model_generator, input_encoder, OUTPUT_SPEC, train_set['seq'], train_set['label'], valid_set['seq'], valid_set['label'],\
-                seq_len = 512, batch_size = 32, max_epochs_per_stage=40, lr = 1e-04, begin_with_frozen_pretrained_layers = True, \
+                seq_len = 512, batch_size = 32, max_epochs_per_stage=1, lr = 1e-04, begin_with_frozen_pretrained_layers = True, \
                 lr_with_frozen_pretrained_layers = 1e-02, n_final_epochs = 1, final_seq_len = 1024, final_lr = 1e-05, callbacks = training_callbacks)
 
 
@@ -81,6 +82,8 @@ def main(args):
 
         results, confusion_matrix = evaluate_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], \
                 start_seq_len = 512, start_batch_size = 32, )
+        
+        np.save(args["pred_add"] + "_" + str(i), np.array(results))
 
         print('Test-set performance:')
         display(results)
