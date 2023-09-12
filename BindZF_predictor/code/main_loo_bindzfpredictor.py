@@ -80,7 +80,7 @@ def main(args):
         # Evaluating the performance on the test-set
 
         results, confusion_matrix = evaluate_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], \
-                i, args["pred_add"], start_seq_len = 512, start_batch_size = 32, )
+                start_seq_len = 512, start_batch_size = 32, )
 
         print('Test-set performance:')
         display(results)
