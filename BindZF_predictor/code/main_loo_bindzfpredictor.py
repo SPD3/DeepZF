@@ -114,7 +114,7 @@ def main(args):
         ]
 
         finetune(model_generator, input_encoder, OUTPUT_SPEC, train_set['seq'], train_set['label'], valid_set['seq'], valid_set['label'],\
-                seq_len = 512, batch_size = 32, max_epochs_per_stage=1, lr = 1e-04, begin_with_frozen_pretrained_layers = True, \
+                seq_len = 512, batch_size = 32, max_epochs_per_stage=40, lr = 1e-04, begin_with_frozen_pretrained_layers = True, \
                 lr_with_frozen_pretrained_layers = 1e-02, n_final_epochs = 1, final_seq_len = 1024, final_lr = 1e-05, callbacks = training_callbacks)
 
 
@@ -122,7 +122,7 @@ def main(args):
         results = predict_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], start_seq_len = 512, start_batch_size = 32, increase_factor = 2)
 
         # Saving predictions to a file
-        np.savetxt(args['pred_add'] + "/prediction_" + str(i), results, delimiter='\t')
+        np.save(args['pred_add'] + "/prediction_" + str(i), np.array(results))
 
 
 if __name__ == "__main__":
