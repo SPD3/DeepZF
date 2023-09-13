@@ -6,8 +6,48 @@ from IPython.display import display
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
 from proteinbert import OutputType, OutputSpec, FinetuningModelGenerator, load_pretrained_model, finetune, evaluate_by_len
+from proteinbert.finetuning import encode_dataset, split_dataset_by_len
 from proteinbert.conv_and_global_attention_model import get_model_with_hidden_layers_as_outputs
 import argparse
+
+def predict_by_len(model_generator, input_encoder, output_spec, seqs, raw_Y, start_seq_len = 512, start_batch_size = 32, increase_factor = 2):
+    
+    assert model_generator.optimizer_weights is None
+    
+    dataset = pd.DataFrame({'seq': seqs, 'raw_y': raw_Y})
+        
+    results = []
+    results_names = []
+    y_trues = []
+    y_preds = []
+    
+    for len_matching_dataset, seq_len, batch_size in split_dataset_by_len(dataset, start_seq_len = start_seq_len, start_batch_size = start_batch_size, \
+            increase_factor = increase_factor):
+
+        X, y_true, sample_weights = encode_dataset(len_matching_dataset['seq'], len_matching_dataset['raw_y'], input_encoder, output_spec, \
+                seq_len = seq_len, needs_filtering = False)
+        
+        assert set(np.unique(sample_weights)) <= {0.0, 1.0}
+        y_mask = (sample_weights == 1)
+        
+        model = model_generator.create_model(seq_len)
+        y_pred = model.predict(X, batch_size = batch_size)
+        
+        y_true = y_true[y_mask].flatten()
+        y_pred = y_pred[y_mask]
+        
+        if output_spec.output_type.is_categorical:
+            y_pred = y_pred.reshape((-1, y_pred.shape[-1]))
+        else:
+            y_pred = y_pred.flatten()
+        
+        y_trues.append(y_true)
+        y_preds.append(y_pred)
+        
+    y_true = np.concatenate(y_trues, axis = 0)
+    y_pred = np.concatenate(y_preds, axis = 0)
+    
+    return y_pred
 
 def user_input():
     parser = argparse.ArgumentParser()
@@ -79,17 +119,10 @@ def main(args):
 
 
         # Evaluating the performance on the test-set
+        results = predict_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], start_seq_len = 512, start_batch_size = 32, increase_factor = 2)
 
-        results, confusion_matrix = evaluate_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], \
-                start_seq_len = 512, start_batch_size = 32, )
-        
-        np.save(args["pred_add"] + "_" + str(i), np.array(results))
-
-        print('Test-set performance:')
-        display(results)
-
-        print('Confusion matrix:')
-        display(confusion_matrix)
+        # Saving predictions to a file
+        np.savetxt(args['pred_add'] + "/prediction_" + str(i), results, delimiter='\t')
 
 
 if __name__ == "__main__":
