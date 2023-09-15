@@ -7,10 +7,10 @@ for j in {0..10};
   mkdir -p $f; 
   mkdir -p ${f}/predictions; 
   
-  python BindZF_predictor/code/main_loo_bindzfpredictor.py 
-    -b_n ${data_name} 
-    -b_d Data/BindZFpredictor/ 
-    -m_d BindZF_predictor/code 
-    -r 1 
+  python BindZF_predictor/code/main_loo_bindzfpredictor.py \
+    -b_n ${data_name} \
+    -b_d Data/BindZFpredictor/ \
+    -m_d BindZF_predictor/code \
+    -r 1 \
     -p_add ${f}/predictions;
 done
