@@ -16,8 +16,6 @@ def predict_by_len(model_generator, input_encoder, output_spec, seqs, raw_Y, sta
     
     dataset = pd.DataFrame({'seq': seqs, 'raw_y': raw_Y})
         
-    results = []
-    results_names = []
     y_trues = []
     y_preds = []
     
@@ -33,7 +31,6 @@ def predict_by_len(model_generator, input_encoder, output_spec, seqs, raw_Y, sta
         model = model_generator.create_model(seq_len)
         y_pred = model.predict(X, batch_size = batch_size)
         
-        y_true = y_true[y_mask].flatten()
         y_pred = y_pred[y_mask]
         
         if output_spec.output_type.is_categorical:
@@ -41,10 +38,8 @@ def predict_by_len(model_generator, input_encoder, output_spec, seqs, raw_Y, sta
         else:
             y_pred = y_pred.flatten()
         
-        y_trues.append(y_true)
         y_preds.append(y_pred)
         
-    y_true = np.concatenate(y_trues, axis = 0)
     y_pred = np.concatenate(y_preds, axis = 0)
     
     return y_pred
@@ -64,15 +59,7 @@ def user_input():
     return arguments
 
 def main(args):
-    if args["run_gpu"] == 1:
-        gpus = tf.config.experimental.list_physical_devices('GPU')
-        if gpus:
-            try:
-                for gpu in gpus:
-                    tf.config.experimental.set_memory_growth(gpu, True)
-            except RuntimeError as e:
-                print(e)
-    else:
+    if args["run_gpu"] != 1:
         # force the server to run on cpu and not on Gpu
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
