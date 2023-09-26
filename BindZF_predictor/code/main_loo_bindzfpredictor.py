@@ -16,13 +16,12 @@ def predict_by_len(model_generator, input_encoder, output_spec, seqs, raw_Y, sta
     
     dataset = pd.DataFrame({'seq': seqs, 'raw_y': raw_Y})
         
-    y_trues = []
-    y_preds = []
+    y_preds = []    
     
     for len_matching_dataset, seq_len, batch_size in split_dataset_by_len(dataset, start_seq_len = start_seq_len, start_batch_size = start_batch_size, \
             increase_factor = increase_factor):
 
-        X, y_true, sample_weights = encode_dataset(len_matching_dataset['seq'], len_matching_dataset['raw_y'], input_encoder, output_spec, \
+        X, _, sample_weights = encode_dataset(len_matching_dataset['seq'], len_matching_dataset['raw_y'], input_encoder, output_spec, \
                 seq_len = seq_len, needs_filtering = False)
         
         assert set(np.unique(sample_weights)) <= {0.0, 1.0}
