@@ -76,6 +76,7 @@ def main(args):
     data_set_file_path = os.path.join(BENCHMARKS_DIR, '%s.csv' % BENCHMARK_NAME)
     data_set = pd.read_csv(data_set_file_path).dropna()
     n_split = data_set['groups'].unique().shape[0]
+    total_results = []
     for i in range(n_split):
         print('Number of iteration %d' % (i))
         train_set = data_set[data_set['groups'] != i]
@@ -107,7 +108,10 @@ def main(args):
         # Evaluating the performance on the test-set
         results = predict_by_len(model_generator, input_encoder, OUTPUT_SPEC, test_set['seq'], test_set['label'], start_seq_len = 512, start_batch_size = 32, increase_factor = 2)
 
-        # Saving predictions to a file
+        total_results.append(i, results)
+    
+    # Saving predictions to a file
+    for i, results in total_results:
         np.save(args['pred_add'] + "/prediction_" + str(i), np.array(results))
 
 
