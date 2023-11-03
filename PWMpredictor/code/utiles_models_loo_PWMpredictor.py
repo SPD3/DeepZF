@@ -80,6 +80,14 @@ def pipeline_func(c_rc_df, zf_df, b1h_model, folder_address, lr, epochs, res_num
             pickle.dump(history.history, hist_file)
 
         # model evaluating on val
+        print("--------------------")
+        print("--------------------")
+        print("x_train")
+        print(x_train)
+        print("x_test")
+        print(x_test)
+        print("--------------------")
+        print("--------------------")
         y_predicted = model.predict(x_test).flatten()
         np.save(folder_address + '/predictions/' + 'pred' + str(i), y_predicted)
         y_predicted_list.append(y_predicted)
