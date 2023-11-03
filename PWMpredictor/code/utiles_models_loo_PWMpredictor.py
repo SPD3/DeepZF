@@ -59,7 +59,7 @@ def pipeline_func(c_rc_df, zf_df, b1h_model, folder_address, lr, epochs, res_num
     y_predicted_list = []
 
     for i in range(n_split):
-        if zf_df[zf_df['groups'] == i].shape[0] == 0:
+        if c_rc_df[c_rc_df['groups'] == i].shape[0] == 0:
             miss_index.append(i)
             continue
 
