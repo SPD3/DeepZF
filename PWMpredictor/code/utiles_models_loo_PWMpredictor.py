@@ -82,6 +82,8 @@ def pipeline_func(c_rc_df, zf_df, b1h_model, folder_address, lr, epochs, res_num
         # model evaluating on val
         print("--------------------")
         print("--------------------")
+        print("i")
+        print(i)
         print("x_train")
         print(x_train)
         print("x_test")
