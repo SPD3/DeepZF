@@ -65,8 +65,8 @@ def pipeline_func(c_rc_df, zf_df, b1h_model, folder_address, lr, epochs, res_num
 
         label_mat = get_label_mat(c_rc_df[c_rc_df['groups'] != i])
         label_test = get_label_mat(c_rc_df[c_rc_df['groups'] == i])
-        data_input_model = create_input_model(zf_df[zf_df['groups'] != i], res_num)
-        data_test_model = create_input_model(zf_df[zf_df['groups'] == i], res_num)
+        data_input_model = create_input_model(c_rc_df[c_rc_df['groups'] != i], res_num)
+        data_test_model = create_input_model(c_rc_df[c_rc_df['groups'] == i], res_num)
 
         x_train, x_test = data_input_model, data_test_model
         y_train, y_test = np.asarray(label_mat), np.asarray(label_test)
